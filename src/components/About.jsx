@@ -26,10 +26,11 @@ export default function About() {
           className="flex flex-col md:flex-row items-center gap-12 max-w-4xl mx-auto"
         >
           <div className="relative flex-shrink-0">
-            <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-primary flex items-center justify-center font-display text-5xl font-bold text-white shadow-2xl shadow-primary/30 animate-pulse">
-              AG
-            </div>
-            <div className="absolute inset-0 rounded-full bg-primary/20 blur-xl -z-10 animate-pulse" />
+            <img 
+              src="../assets/hero.png" 
+              alt="Anshul Gole - Logo Photo" 
+              className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover shadow-2xl shadow-primary/30 border-4 border-primary/20" 
+            />
           </div>
 
           <div className="text-center md:text-left">
@@ -38,7 +39,7 @@ export default function About() {
               <strong className="text-text-primary">Gwalior, Maharashtra</strong>. Building websites is not just my job — it is my passion.
             </p>
             <p className="text-text-secondary leading-relaxed mb-4">
-              Over the past <strong className="text-text-primary">3+ years</strong>, I have built more than 50 websites — for small businesses, startups, portfolios and e-commerce stores. In every project, I focus on design, performance and user experience.
+              Over the past <strong className="text-text-primary">1+ years</strong>, I have built more than 50 websites — for small businesses, startups, portfolios and e-commerce stores. In every project, I focus on design, performance and user experience.
             </p>
             <p className="text-text-secondary leading-relaxed">
               If you want to take your business online or need a brand new portfolio,{' '}
