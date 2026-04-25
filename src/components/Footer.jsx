@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="py-10 px-6 border-t border-border bg-bg">
       <div className="max-w-6xl mx-auto text-center">
         <div className="font-display text-xl font-bold text-primary mb-2">
-          AG<span className="text-text-secondary">.</span>Dev
+          AG<span className="text-text-secondary">-</span>Developer
         </div>
         <p className="text-text-muted text-sm mb-4">Anshul Gole — Web Developer | Gwalior</p>
         <div className="flex items-center justify-center gap-6 mb-4">
