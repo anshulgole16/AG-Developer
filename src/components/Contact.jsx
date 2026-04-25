@@ -15,18 +15,24 @@ export default function Contact() {
   const isInView = useInView(ref, { once: true, margin: '-100px' })
   const { addToast } = useToast()
   const [loading, setLoading] = useState(false)
-  const [form, setForm] = useState({ name: '', contact: '', type: '', msg: '' })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', type: '', msg: '' })
 
   const handleSubmit = async () => {
-    if (!form.name || !form.contact || !form.msg) {
-      return addToast('Please fill all required fields', 'error')
+    if (!form.name || (!form.email && !form.phone) || !form.msg) {
+      return addToast('Please fill name, contact (email/phone), and message', 'error')
     }
     setLoading(true)
-    // Dispatch event for EmailJS integration in App.jsx
-    window.dispatchEvent(new CustomEvent('contact-submit', { detail: form }))
+    const submitData = {
+      name: form.name,
+      email: form.email || '',
+      phone: form.phone || '',
+      type: form.type || 'General',
+      msg: form.msg
+    }
+    window.dispatchEvent(new CustomEvent('contact-submit', { detail: submitData }))
     setTimeout(() => {
       setLoading(false)
-      setForm({ name: '', contact: '', type: '', msg: '' })
+      setForm({ name: '', email: '', phone: '', type: '', msg: '' })
     }, 1500)
   }
 
@@ -54,13 +60,13 @@ export default function Contact() {
             <h3 className="font-display text-xl font-semibold text-text-primary mb-6">Get in Touch</h3>
             <div className="space-y-5">
               {contactInfo.map((item) => (
-                <div key={item.label} className="flex items-center gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-surface border border-border flex items-center justify-center text-primary">
+                <div key={item.label} className="flex items-center gap-4 hover:translate-x-2 transition-transform cursor-pointer">
+                  <div className="w-11 h-11 rounded-xl bg-surface border border-border flex items-center justify-center text-primary hover:bg-primary/10 transition-colors">
                     <item.icon size={18} />
                   </div>
                   <div>
                     <div className="text-text-muted text-xs">{item.label}</div>
-                    <div className="text-text-primary text-sm font-medium">{item.value}</div>
+                    <div className="text-text-primary text-sm font-medium hover:text-primary transition-colors">{item.value}</div>
                   </div>
                 </div>
               ))}
@@ -75,31 +81,40 @@ export default function Contact() {
           >
             <input
               type="text"
-              placeholder="Your Name"
+              placeholder="Your Name *"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               className="w-full px-5 py-3.5 rounded-xl bg-surface border border-border text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+              required
             />
             <input
-              type="text"
-              placeholder="Phone / Email"
-              value={form.contact}
-              onChange={(e) => setForm({ ...form, contact: e.target.value })}
+              type="email"
+              placeholder="Email *"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              className="w-full px-5 py-3.5 rounded-xl bg-surface border border-border text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+            />
+            <input
+              type="tel"
+              placeholder="Phone number *"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
               className="w-full px-5 py-3.5 rounded-xl bg-surface border border-border text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
             />
             <input
               type="text"
-              placeholder="What type of website do you need?"
+              placeholder="Project type (Website, App, etc)"
               value={form.type}
               onChange={(e) => setForm({ ...form, type: e.target.value })}
               className="w-full px-5 py-3.5 rounded-xl bg-surface border border-border text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
             />
             <textarea
-              placeholder="Tell me about your project..."
+              placeholder="Tell me about your project *"
               rows={4}
               value={form.msg}
               onChange={(e) => setForm({ ...form, msg: e.target.value })}
               className="w-full px-5 py-3.5 rounded-xl bg-surface border border-border text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none"
+              required
             />
             <button
               onClick={handleSubmit}

@@ -26,17 +26,28 @@ export default function About() {
           className="flex flex-col md:flex-row items-center gap-12 max-w-4xl mx-auto"
         >
           <div className="relative flex-shrink-0">
-            <img 
-              src="../assets/hero.png" 
+            <motion.img 
+              src="/src/assets/about logo photo .jpeg" 
               alt="Anshul Gole - Logo Photo" 
-              className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover shadow-2xl shadow-primary/30 border-4 border-primary/20" 
+              className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover shadow-2xl shadow-primary/30 border-4 border-primary/20 cursor-pointer"
+              initial={{ scale: 1, rotate: 0 }}
+              whileHover={{ scale: 1.05, rotate: 2, y: -4 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              loading="lazy"
+            />
+            <motion.div 
+              className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 blur-xl -z-10"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              whileHover={{ scale: 1.2, opacity: 0.8 }}
+              transition={{ type: "spring", stiffness: 400 }}
             />
           </div>
 
           <div className="text-center md:text-left">
             <p className="text-text-secondary leading-relaxed mb-4">
               Hello! I am <strong className="text-text-primary">Anshul Gole</strong>, a passionate web developer based in{' '}
-              <strong className="text-text-primary">Gwalior, Maharashtra</strong>. Building websites is not just my job — it is my passion.
+              <strong className="text-text-primary">Gwalior, Madhya pradesh</strong>. Building websites is not just my job — it is my passion.
             </p>
             <p className="text-text-secondary leading-relaxed mb-4">
               Over the past <strong className="text-text-primary">1+ years</strong>, I have built more than 50 websites — for small businesses, startups, portfolios and e-commerce stores. In every project, I focus on design, performance and user experience.
@@ -51,4 +62,3 @@ export default function About() {
     </section>
   )
 }
-

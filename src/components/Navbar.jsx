@@ -53,7 +53,7 @@ export default function Navbar({ onFeedbackClick }) {
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <a href="#" className="font-display text-xl font-bold text-text-primary">
-            AG<span className="text-primary">.</span>Dev
+            AG<span className="text-primary">-</span>Developer
           </a>
 
           <div className="hidden md:flex items-center gap-8">

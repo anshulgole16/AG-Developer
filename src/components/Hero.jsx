@@ -76,9 +76,9 @@ export default function Hero() {
 
         <motion.div variants={item} className="flex items-center justify-center gap-12 md:gap-16">
           {[
-            { target: 50, label: 'Projects Done' },
-            { target: 40, label: 'Happy Clients' },
-            { target: 3, label: 'Years Exp' },
+            { target: 8, label: 'Projects Done' },
+            { target: 15, label: 'Happy Clients' },
+            { target: 1, label: 'Years Exp' },
           ].map((stat, index) => (
             <AnimatedCounter key={stat.label} target={stat.target} delay={index * 0.2} label={stat.label} />
           ))}
