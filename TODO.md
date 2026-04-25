@@ -38,9 +38,11 @@
 - [ ] `npm run dev` - test forms/EmailJS/PDF
 
 ### 7. Git Integration
-- [ ] Create branch `blackboxai/website-update`
-- [ ] Commit changes
+- [x] Create branch `blackboxai/website-update`
+- [x] Commit changes
 - [ ] Push to https://github.com/anshulgole16/web-dep.-website-.git
 - [ ] Open PR
+
+**In progress**
 
 **Next Action**: Start with directory cleanup.
