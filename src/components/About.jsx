@@ -27,7 +27,7 @@ export default function About() {
         >
           <div className="relative flex-shrink-0">
             <motion.img 
-src="/assets/about logo photo .jpeg" 
+              src={new URL('../assets/about logo photo .jpeg', import.meta.url).href}
               alt="Anshul Gole - Logo Photo" 
               className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover shadow-2xl shadow-primary/30 border-4 border-primary/20 cursor-pointer"
               initial={{ scale: 1, rotate: 0 }}
@@ -35,6 +35,7 @@ src="/assets/about logo photo .jpeg"
               transition={{ type: "spring", stiffness: 300 }}
               loading="lazy"
             />
+
             <motion.div 
               className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 blur-xl -z-10"
               initial={{ scale: 0.8, opacity: 0 }}
