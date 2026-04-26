@@ -1,8 +1,8 @@
 {
   "redirects": [
     {
-      "source": "/((?!maintenance\\.html).*)",
-      "destination": "/public/maintenance.html"
+      "source": "/((?!maintenance.html).*)",
+      "destination": "/maintenance.html"
     }
   ]
 }
