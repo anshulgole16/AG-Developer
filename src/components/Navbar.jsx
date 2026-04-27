@@ -17,10 +17,8 @@ export default function Navbar({ onFeedbackClick }) {
   const { theme, toggleTheme } = useTheme()
 const [mobileOpen, setMobileOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('')
-  const phone = '918305995654'
-  const handleWhatsApp = () => {
-    window.open(`https://wa.me/\${phone}?text=Hi Anshul, I need website development for my business.`, '_blank')
-  }
+  const [activeSection, setActiveSection] = useState('')
+
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -88,17 +86,12 @@ const [mobileOpen, setMobileOpen] = useState(false)
               Feedback
             </button>
             <button
-              onClick={handleWhatsApp}
-              className="text-sm font-semibold bg-gradient-to-r from-primary to-primary-dark text-white px-4 py-2 rounded-lg hover:shadow-lg hover:shadow-primary/25 transition-all ml-2"
-            >
-              💬 Get Quote
-            </button>
-            <button
               onClick={toggleTheme}
               className="p-2 rounded-lg bg-surface hover:bg-surface-hover transition-colors text-text-secondary"
             >
               {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
             </button>
+
           </div>
 
           <button
@@ -140,16 +133,8 @@ const [mobileOpen, setMobileOpen] = useState(false)
               >
                 Feedback
               </motion.button>
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                onClick={handleWhatsApp}
-                className="text-2xl font-display font-bold bg-gradient-to-r from-primary to-primary-dark text-white px-6 py-3 rounded-2xl shadow-lg hover:shadow-xl hover:shadow-primary/50 transition-all"
-              >
-                💬 Get Quote
-              </motion.button>
             </div>
+
           </motion.div>
         )}
       </AnimatePresence>
