@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
-import { Mail, Briefcase } from 'lucide-react'
-import AnimatedCounter from './AnimatedCounter.jsx'
+import { MessageCircle, Rocket, Zap, Wallet, GraduationCap } from 'lucide-react'
+import { Phone } from 'lucide-react'
 
 const container = {
   hidden: { opacity: 0 },
@@ -18,10 +18,17 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.76, 0, 0.24, 1] } },
 }
 
+const phone = '918305995654'
+
 export default function Hero() {
   const scrollTo = (id) => {
     const el = document.querySelector(id)
     if (el) el.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const handleWhatsApp = () => {
+    const message = encodeURIComponent('Hi, I want to create a website. Please guide me | Source: Hero Section')
+    window.open(`https://wa.me/${phone}?text=${message}`, '_blank')
   }
 
   return (
@@ -30,59 +37,96 @@ export default function Hero() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px] animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary-dark/10 rounded-full blur-[150px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[150px]" />
       </div>
 
       <motion.div
         variants={container}
         initial="hidden"
         animate="show"
-        className="relative z-10 max-w-5xl mx-auto px-6 text-center"
+        className="relative z-10 max-w-5xl mx-8 px-6 text-center"
       >
-        <motion.div variants={item} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface border border-border text-text-secondary text-sm font-medium mb-8">
-          <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
-          Available for Projects
-        </motion.div>
-
-        <motion.h1 variants={item} className="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-text-primary leading-[1.1] mb-4">
-          Hi, I'm <span className="bg-primary bg-clip-text text-transparent">Anshul Gole</span>
+        {/* Headline */}
+        <motion.h1 variants={item} className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-text-foreground leading-tight mb-6">
+          Get Your Business Website{' '}
+          <span className="bg-rainbow bg-clip-text text-transparent">in 3 Days</span>
         </motion.h1>
 
-        <motion.p variants={item} className="font-display text-xl md:text-2xl text-text-secondary font-medium mb-2">
-          I build websites that bring you real customers
-        </motion.p>
-        <motion.p variants={item} className="text-text-muted text-base md:text-lg max-w-2xl mx-auto mb-2 leading-relaxed">
-          Get a high-converting website that helps your business grow online
-        </motion.p>
-        <motion.p variants={item} className="text-primary font-medium max-w-2xl mx-auto">
-          Trusted by local businesses in Gwalior
+        {/* Subheading */}
+        <motion.p variants={item} className="text-text-foreground/80 text-lg md:text-2xl max-w-2xl mx-auto mb-8 leading-relaxed">
+          Starting ₹4,999 | Mobile Optimized | Fast & SEO Ready
         </motion.p>
 
-        <motion.div variants={item} className="flex flex-wrap items-center justify-center gap-4 mb-16">
+        {/* CTA Buttons */}
+        <motion.div variants={item} className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
           <button
-            onClick={() => scrollTo('#contact')}
-            className="group flex items-center gap-2 px-8 py-4 bg-primary text-white rounded-xl font-medium text-sm hover:bg-primary-dark transition-all hover:scale-105 hover:shadow-xl hover:shadow-primary/25 cursor-pointer"
+            onClick={handleWhatsApp}
+            className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary to-primary-dark text-white rounded-xl font-bold text-lg hover:scale-105 transition-all shadow-[0_0_20px_rgba(139,92,246,0.4)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] cursor-pointer border border-primary/50"
           >
-            💬 Get Free Consultation
-            <Mail size={16} className="group-hover:translate-x-1 transition-transform" />
+            <Rocket size={22} className="animate-bounce" />
+            Get Website Now
           </button>
           <button
-onClick={() => scrollTo('#portfolio')}
-            className="group flex items-center gap-2 px-8 py-4 bg-surface text-text-primary border border-border rounded-xl font-medium text-sm hover:border-border-hover hover:bg-surface-hover transition-all hover:scale-105 cursor-pointer"
+            onClick={() => scrollTo('#pricing')}
+            className="flex items-center gap-3 px-8 py-4 bg-surface text-text-primary border border-border rounded-xl font-medium text-base hover:bg-surface-hover hover:border-text-muted transition-all cursor-pointer"
           >
-            🚀 View Live Projects
-            <Briefcase size={16} className="group-hover:translate-x-1 transition-transform" />
+            <Wallet size={20} />
+            View Pricing
           </button>
         </motion.div>
 
-        <motion.div variants={item} className="flex items-center justify-center gap-12 md:gap-16">
-          {[
-            { target: 15, label: 'Projects Done' },
-            { target: 10, label: 'Happy Clients' },
-            { target: 1, label: 'Years Exp' },
-          ].map((stat, index) => (
-            <AnimatedCounter key={stat.label} target={stat.target} delay={index * 0.2} label={stat.label} />
-          ))}
+        {/* Urgency Line */}
+        <motion.p variants={item} className="text-amber-400 font-medium text-sm mb-12 flex items-center justify-center gap-2">
+          <Zap size={16} className="animate-pulse" /> Limited slots available this week
+        </motion.p>
+
+        {/* Trust Points */}
+        <motion.div variants={item} className="flex flex-wrap items-center justify-center gap-8 mb-16">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+              <Rocket size={18} className="text-primary" />
+            </div>
+            <div className="text-left">
+              <div className="text-text-foreground font-medium">15+ Projects</div>
+              <div className="text-text-foreground/50 text-sm">Delivered</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
+              <Zap size={18} className="text-amber-500" />
+            </div>
+            <div className="text-left">
+              <div className="text-text-foreground font-medium">No advance required</div>
+              <div className="text-text-foreground/50 text-sm">Risk-free process</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+              <Phone size={18} className="text-emerald-500" />
+            </div>
+            <div className="text-left">
+              <div className="text-text-foreground font-medium">Free demo before payment</div>
+              <div className="text-text-foreground/50 text-sm">100% satisfaction</div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Social Proof */}
+        <motion.div variants={item} className="px-6 py-4 bg-elevated/50 rounded-2xl border border-border inline-flex items-center gap-3">
+          <div className="flex -space-x-2">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="w-8 h-8 rounded-full bg-primary/30 border-2 border-elevated flex items-center justify-center text-xs overflow-hidden"
+              >
+                <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Client" className="w-full h-full object-cover" />
+              </div>
+            ))}
+          </div>
+          <div className="text-left">
+            <div className="text-text-foreground font-medium text-sm">Trusted by 10+ businesses</div>
+            <div className="text-text-foreground/50 text-xs">Join them today</div>
+          </div>
         </motion.div>
       </motion.div>
 
@@ -98,10 +142,9 @@ onClick={() => scrollTo('#portfolio')}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
           className="w-6 h-10 rounded-full border-2 border-border flex items-start justify-center p-1.5"
         >
-          <div className="w-1.5 h-1.5 rounded-full bg-text-secondary" />
+          <div className="w-1.5 h-1.5 rounded-full bg-text-foreground/50" />
         </motion.div>
       </motion.div>
     </section>
   )
 }
-

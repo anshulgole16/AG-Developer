@@ -1,27 +1,56 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Star } from 'lucide-react'
 import { useToast } from '../context/ToastContext'
+import { collection, addDoc } from 'firebase/firestore'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { db, storage } from '../firebase'
 
 export default function FeedbackModal({ open, onClose }) {
   const { addToast } = useToast()
   const [rating, setRating] = useState(5)
   const [hoverRating, setHoverRating] = useState(0)
-  const [form, setForm] = useState({ name: '', email: '', text: '' })
+  const [form, setForm] = useState({ name: '', business: '', email: '', text: '' })
+  const [photoFile, setPhotoFile] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const fileInputRef = useRef(null)
 
-  const handleSubmit = () => {
-    if (!form.name || !form.email || !form.text) {
-      return addToast('Please fill all fields', 'error')
+  const handleSubmit = async () => {
+    if (!form.name || !form.business || !form.text) {
+      return addToast('Please fill all required fields', 'error')
     }
-    const stored = JSON.parse(localStorage.getItem('feedback') || '[]')
-    stored.push({ ...form, rating, location: 'India', date: new Date().toISOString() })
-    localStorage.setItem('feedback', JSON.stringify(stored))
-    addToast('Thank you for your feedback!')
-    setForm({ name: '', email: '', text: '' })
-    setRating(5)
-    onClose()
-    // Trigger re-render of testimonials
-    window.dispatchEvent(new Event('storage'))
+    
+    setIsSubmitting(true)
+    
+    try {
+      let photoURL = 'https://i.pravatar.cc/150?img=1' // default
+      
+      if (photoFile) {
+        const storageRef = ref(storage, 'reviews/' + Date.now() + '_' + photoFile.name)
+        await uploadBytes(storageRef, photoFile)
+        photoURL = await getDownloadURL(storageRef)
+      }
+
+      await addDoc(collection(db, "reviews"), {
+        name: form.name,
+        business: form.business,
+        rating,
+        feedback: form.text,
+        photo: photoURL,
+        date: new Date().toISOString()
+      })
+
+      addToast('Review submitted successfully!')
+      setForm({ name: '', business: '', email: '', text: '' })
+      setPhotoFile(null)
+      setRating(5)
+      onClose()
+    } catch (error) {
+      console.error("Error adding document: ", error)
+      addToast('Failed to submit review. Check Firebase config.', 'error')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -61,13 +90,23 @@ export default function FeedbackModal({ open, onClose }) {
                 />
               </div>
               <div>
-                <label className="block text-text-secondary text-xs font-medium mb-2">Email Address</label>
+                <label className="block text-text-secondary text-xs font-medium mb-2">Business Type (e.g. Gym Owner)</label>
                 <input
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="your@email.com"
+                  type="text"
+                  value={form.business}
+                  onChange={(e) => setForm({ ...form, business: e.target.value })}
+                  placeholder="Enter your business type"
                   className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-primary transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-text-secondary text-xs font-medium mb-2">Your Photo (Optional)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={(e) => setPhotoFile(e.target.files[0])}
+                  className="w-full px-4 py-2 rounded-xl bg-surface border border-border text-text-primary text-sm focus:outline-none focus:border-primary transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/20 file:text-primary hover:file:bg-primary/30"
                 />
               </div>
               <div>
@@ -104,9 +143,14 @@ export default function FeedbackModal({ open, onClose }) {
               </div>
               <button
                 onClick={handleSubmit}
-                className="w-full py-3.5 bg-primary text-white rounded-xl font-medium text-sm hover:bg-primary-dark transition-all hover:scale-[1.02] cursor-pointer"
+                disabled={isSubmitting}
+                className="w-full py-3.5 bg-primary text-white rounded-xl font-medium text-sm hover:bg-primary-dark transition-all hover:scale-[1.02] disabled:opacity-50 flex justify-center items-center cursor-pointer"
               >
-                Submit Feedback
+                {isSubmitting ? (
+                  <motion.div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full" animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} />
+                ) : (
+                  'Submit Review'
+                )}
               </button>
             </div>
           </motion.div>

@@ -26,9 +26,9 @@ export default function About() {
           className="flex flex-col md:flex-row items-center gap-12 max-w-4xl mx-auto"
         >
           <div className="relative flex-shrink-0">
-            <motion.img 
-              src={new URL('../assets/about logo photo .jpeg', import.meta.url).href}
-              alt="Anshul Gole" 
+            <motion.img
+              src={new URL('../assets/about logo photo.jpeg', import.meta.url).href}
+              alt="Anshul Gole"
               className="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover shadow-2xl shadow-primary/30 border-4 border-primary/20 cursor-pointer"
               initial={{ scale: 1, rotate: 0 }}
               whileHover={{ scale: 1.05, rotate: 2, y: -4 }}
@@ -36,7 +36,7 @@ export default function About() {
               loading="lazy"
             />
 
-            <motion.div 
+            <motion.div
               className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 blur-xl -z-10"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -46,16 +46,9 @@ export default function About() {
           </div>
 
           <div className="text-center md:text-left">
-            <p className="text-text-secondary leading-relaxed mb-4">
-              Hello! I am <strong className="text-text-primary">Anshul Gole</strong>, a passionate web developer based in{' '}
-              <strong className="text-text-primary">Gwalior, Madhya Pradesh</strong>. Building websites is my passion.
-            </p>
-            <p className="text-text-secondary leading-relaxed mb-4">
-              I have worked on multiple projects including business websites, portfolios and online stores. Every project gets my full focus on design, performance and user experience.
-            </p>
-            <p className="text-text-secondary leading-relaxed">
-              If you want to take your business online or need a brand new portfolio,{' '}
-              <strong className="text-text-primary">let's make it happen together.</strong>
+            <h3 className="text-2xl font-display font-semibold text-text-primary mb-4">Anshul Gole</h3>
+            <p className="text-text-secondary text-lg leading-relaxed">
+              I help small businesses get online fast with affordable, high-converting websites.
             </p>
           </div>
         </motion.div>

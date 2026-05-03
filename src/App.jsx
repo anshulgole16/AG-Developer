@@ -13,14 +13,18 @@ import Maintenance from './components/Maintenance'
 import Portfolio from './components/Portfolio'
 import Testimonials from './components/Testimonials'
 import About from './components/About'
+import FAQ from './components/FAQ'
 import Contact from './components/Contact'
 import FeedbackModal from './components/FeedbackModal'
 import BackToTop from './components/BackToTop'
 import Footer from './components/Footer'
+import LeadCapture from './components/LeadCapture'
+import PolicyView from './components/PolicyView'
 
 function AppContent() {
   const [loaded, setLoaded] = useState(false)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
+  const [activePolicy, setActivePolicy] = useState(null)
   const { addToast } = useToast()
   useLenis()
 
@@ -74,11 +78,17 @@ function AppContent() {
       }
     }
 
+    const handleOpenPolicy = (e) => {
+      setActivePolicy(e.detail)
+    }
+
     window.addEventListener('buy-plan', handleBuyPlan)
     window.addEventListener('contact-submit', handleContact)
+    window.addEventListener('open-policy', handleOpenPolicy)
     return () => {
       window.removeEventListener('buy-plan', handleBuyPlan)
       window.removeEventListener('contact-submit', handleContact)
+      window.removeEventListener('open-policy', handleOpenPolicy)
     }
   }, [addToast])
 
@@ -93,15 +103,28 @@ function AppContent() {
         <Hero />
         <Skills />
         <Pricing />
-        <Maintenance />
         <Portfolio />
         <Testimonials />
         <About />
+        <FAQ />
         <Contact />
       </main>
       <Footer />
+      <LeadCapture />
+      <PolicyView policyType={activePolicy} onClose={() => setActivePolicy(null)} />
       <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
       <BackToTop />
+      
+      {/* Floating WhatsApp Button */}
+      <a
+        href={`https://wa.me/918305995654?text=${encodeURIComponent('Hi, I need a website | Source: Floating Button')}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-lg shadow-[#25D366]/40 hover:scale-110 hover:-translate-y-1 transition-all flex items-center justify-center cursor-pointer"
+        aria-label="Chat on WhatsApp"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+      </a>
     </>
   )
 }

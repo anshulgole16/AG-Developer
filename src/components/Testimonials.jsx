@@ -1,32 +1,46 @@
 import { useRef, useEffect, useState } from 'react'
+import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore'
+import { db } from '../firebase'
 import { motion, useInView } from 'framer-motion'
-import { Star, Quote } from 'lucide-react'
+import { Star, Quote, CheckCircle } from 'lucide-react'
 
 const defaultTestimonials = [
-  { name: 'Rajesh Sharma', location: 'Shop Owner, Lashkar Market, Gwalior', rating: 5, text: 'My clothing store website increased orders 3x within first month. Fast and professional!' },
-  { name: 'Dr. Priya Jain', location: 'Clinic Owner, Morar, Gwalior', rating: 5, text: 'Patients can now book appointments online easily. Excellent communication and reliable.' },
-  { name: 'Vikram Singh', location: 'Restaurant Owner, City Centre, Gwalior', rating: 5, text: 'Online orders doubled after new website. Anshul understands business needs perfectly.' },
-  { name: 'Neha Gupta', location: 'Tutor, Gwalior', rating: 5, text: 'My online classes platform looks professional and works flawlessly across devices.' },
-  { name: 'Amit Patel', location: 'Business Consultant, Madhya Pradesh', rating: 5, text: 'Delivered high-quality business site on time. Results exceeded expectations.' },
+  { name: 'Ravi', location: 'Gym Owner • Gwalior', date: 'Jan 2025', rating: 5, text: 'Got my website ready in just 3 days, and clients are already pouring in!', image: 'https://i.pravatar.cc/150?img=11' },
+  { name: 'Priya', location: 'Boutique Owner • India', date: 'Feb 2025', rating: 5, text: 'The design is very premium. Online orders have already started coming in.', image: 'https://i.pravatar.cc/150?img=5' },
+  { name: 'Amit', location: 'Real Estate Agent • Delhi', date: 'March 2025', rating: 5, text: 'Perfect lead generation website. It is already ranking on Google thanks to the SEO.', image: 'https://i.pravatar.cc/150?img=12' },
 ]
 
 export default function Testimonials() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
-  const [testimonials, setTestimonials] = useState(() => {
-    const stored = localStorage.getItem('feedback')
-    const parsed = stored ? JSON.parse(stored) : []
-    return [...defaultTestimonials, ...parsed]
-  })
+  const [testimonials, setTestimonials] = useState(defaultTestimonials)
 
   useEffect(() => {
-    const handleStorage = () => {
-      const stored = localStorage.getItem('feedback')
-      const parsed = stored ? JSON.parse(stored) : []
-      setTestimonials([...defaultTestimonials, ...parsed])
+    try {
+      const q = query(collection(db, "reviews"), orderBy("date", "desc"), limit(6))
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const fetched = []
+        snapshot.forEach(doc => {
+          const data = doc.data()
+          fetched.push({
+            name: data.name,
+            location: data.business,
+            rating: data.rating,
+            text: data.feedback,
+            image: data.photo,
+            date: new Date(data.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+            verified: true
+          })
+        })
+        setTestimonials([...fetched, ...defaultTestimonials].slice(0, 6))
+      }, (error) => {
+        console.error("Firebase fetch error:", error)
+        // Fallback to defaults on error (e.g. missing indexes or uninitialized db)
+      })
+      return () => unsubscribe()
+    } catch (e) {
+      console.log("Firebase not configured yet", e)
     }
-    window.addEventListener('storage', handleStorage)
-    return () => window.removeEventListener('storage', handleStorage)
   }, [])
 
   return (
@@ -54,18 +68,24 @@ export default function Testimonials() {
               className="relative p-8 rounded-2xl bg-surface border border-border hover:border-border-hover transition-all duration-300 hover:-translate-y-1"
             >
               <Quote size={24} className="text-primary/30 mb-4" />
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, j) => (
-                  <Star key={j} size={14} className={j < t.rating ? 'text-amber-400 fill-amber-400' : 'text-text-muted'} />
-                ))}
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, j) => (
+                    <Star key={j} size={14} className={j < t.rating ? 'text-amber-400 fill-amber-400' : 'text-text-muted'} />
+                  ))}
+                </div>
+                <span className="text-xs text-text-muted font-medium">{t.date}</span>
               </div>
               <p className="text-text-secondary text-sm leading-relaxed mb-6 italic">"{t.text}"</p>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold">
-                  {t.name.split(' ').map(n => n[0]).join('')}
+                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold overflow-hidden border-2 border-border">
+                  {t.image ? <img src={t.image} alt={t.name} className="w-full h-full object-cover" /> : t.name.split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
-                  <div className="text-text-primary text-sm font-medium">{t.name}</div>
+                  <div className="text-text-primary text-sm font-medium flex items-center gap-1">
+                    {t.name}
+                    {t.verified && <CheckCircle size={14} className="text-[#25D366]" />}
+                  </div>
                   <div className="text-text-muted text-xs">{t.location}</div>
                 </div>
               </div>

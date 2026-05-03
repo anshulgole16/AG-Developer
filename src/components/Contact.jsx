@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
-import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react'
+import { Phone, Mail, MapPin, Clock, Send, MessageCircle } from 'lucide-react'
 import { useToast } from '../context/ToastContext'
 
 const contactInfo = [
@@ -48,12 +48,8 @@ export default function Contact() {
         >
           <h2 className="font-display text-3xl md:text-4xl font-bold text-text-primary mb-4">Contact Us</h2>
           <div className="w-12 h-1 bg-primary rounded-full mx-auto mb-4" />
-          <p className="text-text-secondary">Free consultation, no commitment</p>
-          <p className="text-primary font-semibold text-lg mt-2">
-            ⚡ Get response within 30 minutes on WhatsApp
-          </p>
-          <p className="text-primary font-semibold text-lg">
-            📞 Call or WhatsApp — fastest response guaranteed
+          <p className="text-text-secondary text-lg">
+            ⚡ Get your website in 3 days — message now
           </p>
         </motion.div>
 
@@ -76,6 +72,20 @@ export default function Contact() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            <div className="mt-8">
+              <button
+                onClick={() => {
+                  const message = encodeURIComponent('Hi, I want a website for my business | Source: Contact Section')
+                  window.open(`https://wa.me/918305995654?text=${message}`, '_blank')
+                }}
+                className="w-full py-4 bg-[#25D366] text-white rounded-xl font-bold text-base flex items-center justify-center gap-2 hover:bg-[#128C7E] transition-all hover:scale-105 shadow-lg shadow-[#25D366]/30 cursor-pointer"
+              >
+                <MessageCircle size={20} />
+                Chat on WhatsApp
+              </button>
+              <p className="text-center text-text-muted text-xs mt-2">Reply within 10 minutes</p>
             </div>
           </motion.div>
 
@@ -136,6 +146,9 @@ export default function Contact() {
                 </>
               )}
             </button>
+            <p className="text-center text-text-muted text-xs mt-3">
+              By proceeding, you agree to our <button onClick={() => window.dispatchEvent(new CustomEvent('open-policy', { detail: 'terms' }))} className="text-primary hover:underline cursor-pointer">Terms & Policies</button>
+            </p>
           </motion.div>
         </div>
       </div>
