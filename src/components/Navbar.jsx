@@ -57,8 +57,8 @@ export default function Navbar({ onFeedbackClick }) {
         initial={{ y: -100 }}
         animate={{ y: direction === 'down' && scrollY > 200 ? -100 : 0 }}
       >
-        <div className="max-6xl mx-8 px-6 h-16 flex items-center justify-between">
-          <a href="#" className="font-0display text-2xl font-bold text-foreground">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between w-full">
+          <a href="#" className="font-display text-2xl font-bold text-foreground">
             Web<span className="text-primary">Developer</span>
           </a>
 
@@ -113,7 +113,7 @@ export default function Navbar({ onFeedbackClick }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-99 bg-bg/95 backdrop-blur-xl md:hidden pt-16"
+            className="fixed inset-0 z-[99] bg-bg/95 backdrop-blur-xl md:hidden pt-16"
           >
             <div className="flex flex-col items-center justify-center h-full gap-8">
               {navLinks.map((link, i) => (
@@ -123,7 +123,7 @@ export default function Navbar({ onFeedbackClick }) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
                   onClick={() => scrollTo(link.href)}
-                  className="text-2xl font-0display font-medium text-foreground hover:text-primary transition-colors"
+                  className="text-2xl font-display font-medium text-foreground hover:text-primary transition-colors"
                 >
                   {link.label}
                 </motion.button>
@@ -133,7 +133,7 @@ export default function Navbar({ onFeedbackClick }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
                 onClick={() => { setMobileOpen(false); onFeedbackClick && onFeedbackClick() }}
-                className="text-2xl font-0display font-medium text-foreground hover:text-primary transition-colors cursor-pointer"
+                className="text-2xl font-display font-medium text-foreground hover:text-primary transition-colors cursor-pointer"
               >
                 Feedback
               </motion.button>
