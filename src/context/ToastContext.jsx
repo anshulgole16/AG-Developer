@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { CheckCircle, XCircle } from 'lucide-react'
 
@@ -14,6 +14,16 @@ export function ToastProvider({ children }) {
       setToasts((prev) => prev.filter((t) => t.id !== id))
     }, 4000)
   }, [])
+
+  // Global listener for background/mobile debugging
+  useEffect(() => {
+    const handleGlobalToast = (e) => {
+      const { message, type } = e.detail
+      addToast(message, type)
+    }
+    window.addEventListener('show-toast', handleGlobalToast)
+    return () => window.removeEventListener('show-toast', handleGlobalToast)
+  }, [addToast])
 
   return (
     <ToastContext.Provider value={{ addToast }}>

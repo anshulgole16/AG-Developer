@@ -60,22 +60,28 @@ export default function FeedbackModal({ open, onClose }) {
       // Run Firebase operations in background so UI doesn't hang
       const backgroundSync = async () => {
         try {
+          let cloudPhotoUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(form.name)}&background=random&color=fff&size=150`
           if (photoFile) {
-            const storageRef = ref(storage, 'reviews/' + Date.now() + '_' + photoFile.name)
-            await uploadBytes(storageRef, photoFile)
-            newReview.photo = await getDownloadURL(storageRef)
+            try {
+              const storageRef = ref(storage, 'reviews/' + Date.now() + '_' + photoFile.name)
+              await uploadBytes(storageRef, photoFile)
+              cloudPhotoUrl = await getDownloadURL(storageRef)
+            } catch (storageErr) {
+              console.error("Storage upload failed", storageErr)
+            }
           }
           await addDoc(collection(db, "reviews"), {
-            name: newReview.name,
-            business: newReview.business,
-            email: newReview.email,
-            rating: newReview.rating,
-            feedback: newReview.feedback,
-            photo: newReview.photo,
-            date: newReview.date
+            name: form.name,
+            business: form.business,
+            email: form.email,
+            rating: rating,
+            feedback: form.text,
+            photo: cloudPhotoUrl,
+            date: new Date().toISOString()
           })
         } catch (e) {
           console.error("Background Firebase sync failed:", e)
+          addToast('Database Sync Failed! Check your Firebase rules.', 'error')
         }
       }
       backgroundSync()

@@ -36,13 +36,10 @@ export default function Testimonials() {
         })
         
         setTestimonials(prev => {
-          // Merge Firebase data with existing (local) data
           const combined = [...fetched, ...prev]
-          // Deduplicate by name and text content to avoid duplicates on refresh
           const unique = combined.filter((v, i, a) => 
             a.findIndex(t => (t.name === v.name && t.text === v.text)) === i
           )
-          // Sort descending by date
           unique.sort((a, b) => b.rawDate - a.rawDate)
           const finalData = unique.slice(0, 6)
           localStorage.setItem('local_feedbacks', JSON.stringify(finalData))
@@ -50,6 +47,12 @@ export default function Testimonials() {
         })
       }, (error) => {
         console.error("Firebase fetch error:", error)
+        // If it fails on mobile, we'll see a toast
+        try {
+           window.dispatchEvent(new CustomEvent('show-toast', { 
+             detail: { message: "Firebase Connection Error: Check your database rules!", type: 'error' } 
+           }))
+        } catch(e) {}
       })
       return () => unsubscribe()
     } catch (e) {
