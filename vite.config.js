@@ -12,5 +12,8 @@ export default defineConfig({
     allowedHosts: true,
     cors: true,
   },
+  build: {
+    chunkSizeWarningLimit: 1600,
+  },
 })
 
