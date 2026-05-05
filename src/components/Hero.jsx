@@ -1,3 +1,6 @@
+import { useState, useEffect } from 'react'
+import { collection, onSnapshot, query } from 'firebase/firestore'
+import { db } from '../firebase'
 import { motion } from 'framer-motion'
 import { MessageCircle, Rocket, Zap, Wallet, GraduationCap } from 'lucide-react'
 import { Phone } from 'lucide-react'
@@ -21,6 +24,59 @@ const item = {
 const phone = '918305995654'
 
 export default function Hero() {
+  const [recentAvatars, setRecentAvatars] = useState(() => {
+    try {
+      const saved = localStorage.getItem('local_avatars')
+      return saved ? JSON.parse(saved) : []
+    } catch (e) {
+      return []
+    }
+  })
+
+  useEffect(() => {
+    try {
+      const q = query(collection(db, "reviews"))
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const fetched = []
+        snapshot.forEach(doc => {
+          const data = doc.data()
+          if (data.photo) {
+            fetched.push({ photo: data.photo, rawDate: data.date ? new Date(data.date).getTime() : 0 })
+          }
+        })
+        
+        setRecentAvatars(prev => {
+          // Merge and deduplicate avatars
+          const fetchedUrls = fetched.sort((a, b) => b.rawDate - a.rawDate).map(f => f.photo)
+          const combined = [...fetchedUrls, ...prev]
+          const unique = [...new Set(combined)]
+          const finalAvatars = unique.slice(0, 3)
+          localStorage.setItem('local_avatars', JSON.stringify(finalAvatars))
+          return finalAvatars
+        })
+      })
+      return () => unsubscribe()
+    } catch (e) {
+      console.log(e)
+    }
+  }, [])
+
+  // Optimistic UI Update Listener
+  useEffect(() => {
+    const handleNewFeedback = (e) => {
+      const newReview = e.detail
+      if (newReview.photo) {
+        setRecentAvatars(prev => {
+          const updated = [newReview.photo, ...prev].slice(0, 3)
+          localStorage.setItem('local_avatars', JSON.stringify(updated))
+          return updated
+        })
+      }
+    }
+    window.addEventListener('new-feedback', handleNewFeedback)
+    return () => window.removeEventListener('new-feedback', handleNewFeedback)
+  }, [])
+
   const scrollTo = (id) => {
     const el = document.querySelector(id)
     if (el) el.scrollIntoView({ behavior: 'smooth' })
@@ -112,14 +168,18 @@ export default function Hero() {
         </motion.div>
 
         {/* Social Proof */}
-        <motion.div variants={item} className="px-6 py-4 bg-elevated/50 rounded-2xl border border-border inline-flex items-center gap-3">
+        <motion.div 
+          variants={item} 
+          onClick={() => scrollTo('#testimonials')}
+          className="px-6 py-4 bg-elevated/50 rounded-2xl border border-border inline-flex items-center gap-3 cursor-pointer hover:bg-elevated hover:scale-105 transition-all"
+        >
           <div className="flex -space-x-2">
-            {[1, 2, 3].map((i) => (
+            {(recentAvatars.length > 0 ? recentAvatars : [1, 2, 3].map(i => `https://i.pravatar.cc/100?img=${i + 10}`)).map((img, i) => (
               <div
                 key={i}
                 className="w-8 h-8 rounded-full bg-primary/30 border-2 border-elevated flex items-center justify-center text-xs overflow-hidden"
               >
-                <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Client" className="w-full h-full object-cover" />
+                <img src={img} alt="Client" className="w-full h-full object-cover" />
               </div>
             ))}
           </div>

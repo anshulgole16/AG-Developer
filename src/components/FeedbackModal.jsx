@@ -15,30 +15,70 @@ export default function FeedbackModal({ open, onClose }) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const fileInputRef = useRef(null)
 
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = (error) => reject(error)
+    })
+  }
+
   const handleSubmit = async () => {
     if (!form.name || !form.business || !form.text) {
       return addToast('Please fill all required fields', 'error')
     }
     
     setIsSubmitting(true)
-    
+
     try {
       let photoURL = `https://ui-avatars.com/api/?name=${encodeURIComponent(form.name)}&background=random&color=fff&size=150`
       
       if (photoFile) {
-        const storageRef = ref(storage, 'reviews/' + Date.now() + '_' + photoFile.name)
-        await uploadBytes(storageRef, photoFile)
-        photoURL = await getDownloadURL(storageRef)
+        try {
+          photoURL = await fileToBase64(photoFile)
+        } catch (e) {
+          photoURL = URL.createObjectURL(photoFile)
+        }
       }
-
-      await addDoc(collection(db, "reviews"), {
+      
+      const newReview = {
         name: form.name,
         business: form.business,
+        email: form.email,
         rating,
         feedback: form.text,
         photo: photoURL,
-        date: new Date().toISOString()
-      })
+        date: new Date().toISOString(),
+        rawDate: Date.now(),
+        verified: true
+      }
+
+      // Optimistically update UI instantly via CustomEvent
+      window.dispatchEvent(new CustomEvent('new-feedback', { detail: newReview }))
+
+      // Run Firebase operations in background so UI doesn't hang
+      const backgroundSync = async () => {
+        try {
+          if (photoFile) {
+            const storageRef = ref(storage, 'reviews/' + Date.now() + '_' + photoFile.name)
+            await uploadBytes(storageRef, photoFile)
+            newReview.photo = await getDownloadURL(storageRef)
+          }
+          await addDoc(collection(db, "reviews"), {
+            name: newReview.name,
+            business: newReview.business,
+            email: newReview.email,
+            rating: newReview.rating,
+            feedback: newReview.feedback,
+            photo: newReview.photo,
+            date: newReview.date
+          })
+        } catch (e) {
+          console.error("Background Firebase sync failed:", e)
+        }
+      }
+      backgroundSync()
 
       addToast('Review submitted successfully!')
       setForm({ name: '', business: '', email: '', text: '' })
@@ -46,8 +86,8 @@ export default function FeedbackModal({ open, onClose }) {
       setRating(5)
       onClose()
     } catch (error) {
-      console.error("Error adding document: ", error)
-      addToast('Failed to submit review. Check Firebase config.', 'error')
+      console.error("Error submitting form: ", error)
+      addToast('Error submitting review.', 'error')
     } finally {
       setIsSubmitting(false)
     }
@@ -96,6 +136,16 @@ export default function FeedbackModal({ open, onClose }) {
                   value={form.business}
                   onChange={(e) => setForm({ ...form, business: e.target.value })}
                   placeholder="Enter your business type"
+                  className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-primary transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-text-secondary text-xs font-medium mb-2">Email Address (Optional)</label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  placeholder="Enter your email address"
                   className="w-full px-4 py-3 rounded-xl bg-surface border border-border text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-primary transition-all"
                 />
               </div>

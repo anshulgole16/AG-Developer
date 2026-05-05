@@ -7,7 +7,14 @@ import { Star, Quote, CheckCircle } from 'lucide-react'
 export default function Testimonials() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
-  const [testimonials, setTestimonials] = useState([])
+  const [testimonials, setTestimonials] = useState(() => {
+    try {
+      const saved = localStorage.getItem('local_feedbacks')
+      return saved ? JSON.parse(saved) : []
+    } catch (e) {
+      return []
+    }
+  })
 
   useEffect(() => {
     try {
@@ -28,10 +35,19 @@ export default function Testimonials() {
           })
         })
         
-        // Sort descending by date
-        fetched.sort((a, b) => b.rawDate - a.rawDate)
-        
-        setTestimonials(fetched.slice(0, 6))
+        setTestimonials(prev => {
+          // Merge Firebase data with existing (local) data
+          const combined = [...fetched, ...prev]
+          // Deduplicate by name and text content to avoid duplicates on refresh
+          const unique = combined.filter((v, i, a) => 
+            a.findIndex(t => (t.name === v.name && t.text === v.text)) === i
+          )
+          // Sort descending by date
+          unique.sort((a, b) => b.rawDate - a.rawDate)
+          const finalData = unique.slice(0, 6)
+          localStorage.setItem('local_feedbacks', JSON.stringify(finalData))
+          return finalData
+        })
       }, (error) => {
         console.error("Firebase fetch error:", error)
       })
@@ -41,8 +57,32 @@ export default function Testimonials() {
     }
   }, [])
 
+  // Optimistic UI Update Listener
+  useEffect(() => {
+    const handleNewFeedback = (e) => {
+      const data = e.detail
+      const newReview = {
+        name: data.name,
+        location: data.business,
+        rating: data.rating,
+        text: data.feedback,
+        image: data.photo,
+        rawDate: Date.now(),
+        date: 'Just now',
+        verified: true
+      }
+      setTestimonials(prev => {
+        const updated = [newReview, ...prev].slice(0, 6)
+        localStorage.setItem('local_feedbacks', JSON.stringify(updated))
+        return updated
+      })
+    }
+    window.addEventListener('new-feedback', handleNewFeedback)
+    return () => window.removeEventListener('new-feedback', handleNewFeedback)
+  }, [])
+
   return (
-    <section className="py-24 px-6 bg-bg-secondary overflow-hidden">
+    <section id="testimonials" className="py-24 px-6 bg-bg-secondary overflow-hidden">
       <div className="max-w-6xl mx-auto">
         <motion.div
           ref={ref}
