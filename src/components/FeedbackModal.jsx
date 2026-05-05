@@ -23,7 +23,7 @@ export default function FeedbackModal({ open, onClose }) {
     setIsSubmitting(true)
     
     try {
-      let photoURL = 'https://i.pravatar.cc/150?img=1' // default
+      let photoURL = `https://ui-avatars.com/api/?name=${encodeURIComponent(form.name)}&background=random&color=fff&size=150`
       
       if (photoFile) {
         const storageRef = ref(storage, 'reviews/' + Date.now() + '_' + photoFile.name)

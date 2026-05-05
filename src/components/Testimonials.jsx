@@ -1,23 +1,17 @@
 import { useRef, useEffect, useState } from 'react'
-import { collection, onSnapshot, query, orderBy, limit } from 'firebase/firestore'
+import { collection, onSnapshot, query } from 'firebase/firestore'
 import { db } from '../firebase'
 import { motion, useInView } from 'framer-motion'
 import { Star, Quote, CheckCircle } from 'lucide-react'
 
-const defaultTestimonials = [
-  { name: 'Ravi', location: 'Gym Owner • Gwalior', date: 'Jan 2025', rating: 5, text: 'Got my website ready in just 3 days, and clients are already pouring in!', image: 'https://i.pravatar.cc/150?img=11' },
-  { name: 'Priya', location: 'Boutique Owner • India', date: 'Feb 2025', rating: 5, text: 'The design is very premium. Online orders have already started coming in.', image: 'https://i.pravatar.cc/150?img=5' },
-  { name: 'Amit', location: 'Real Estate Agent • Delhi', date: 'March 2025', rating: 5, text: 'Perfect lead generation website. It is already ranking on Google thanks to the SEO.', image: 'https://i.pravatar.cc/150?img=12' },
-]
-
 export default function Testimonials() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-100px' })
-  const [testimonials, setTestimonials] = useState(defaultTestimonials)
+  const [testimonials, setTestimonials] = useState([])
 
   useEffect(() => {
     try {
-      const q = query(collection(db, "reviews"), orderBy("date", "desc"), limit(6))
+      const q = query(collection(db, "reviews"))
       const unsubscribe = onSnapshot(q, (snapshot) => {
         const fetched = []
         snapshot.forEach(doc => {
@@ -28,14 +22,18 @@ export default function Testimonials() {
             rating: data.rating,
             text: data.feedback,
             image: data.photo,
-            date: new Date(data.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+            rawDate: data.date ? new Date(data.date).getTime() : 0,
+            date: data.date ? new Date(data.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Recent',
             verified: true
           })
         })
-        setTestimonials([...fetched, ...defaultTestimonials].slice(0, 6))
+        
+        // Sort descending by date
+        fetched.sort((a, b) => b.rawDate - a.rawDate)
+        
+        setTestimonials(fetched.slice(0, 6))
       }, (error) => {
         console.error("Firebase fetch error:", error)
-        // Fallback to defaults on error (e.g. missing indexes or uninitialized db)
       })
       return () => unsubscribe()
     } catch (e) {
